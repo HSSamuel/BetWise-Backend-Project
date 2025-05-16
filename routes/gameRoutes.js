@@ -5,16 +5,15 @@ const {
   getGames,
   setResult,
 } = require("../controllers/gameController");
-const { auth, isAdmin } = require("../middlewares/authMiddleware");
+const { auth, isAdmin } = require("../middleware/authMiddleware");
 
-// Admin only
+// Admin only - create a new game
 router.post("/", auth, isAdmin, createGame);
 
-// Public - View games
+// Public - get list of all games
 router.get("/", getGames);
 
-// Admin - Set result
+// Admin only - set the result of a game
 router.patch("/:id/result", auth, isAdmin, setResult);
 
 module.exports = router;
-// This code defines the routes for managing games in a betting application.

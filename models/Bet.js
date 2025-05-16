@@ -1,4 +1,3 @@
-// models/Bet.js
 const mongoose = require("mongoose");
 
 const BetSchema = new mongoose.Schema({

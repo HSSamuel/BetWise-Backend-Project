@@ -1,13 +1,23 @@
 const Game = require("../models/Game");
 
 exports.createGame = async (req, res) => {
-  const { teamA, teamB, oddsA, oddsB, drawOdds } = req.body;
+  const { homeTeam, awayTeam, odds, league, matchDate } = req.body;
 
   try {
-    const game = new Game({ teamA, teamB, oddsA, oddsB, drawOdds });
+    const game = new Game({
+      homeTeam,
+      awayTeam,
+      odds,
+      league,
+      matchDate,
+    });
     await game.save();
-    res.status(201).json(game);
+    res.status(201).json({
+      message: `Match added! ${homeTeam} vs ${awayTeam} is ready for bets!`,
+      game,
+    });
   } catch (err) {
+    console.error("Error creating game:", err);
     res.status(500).json({ msg: "Server error" });
   }
 };

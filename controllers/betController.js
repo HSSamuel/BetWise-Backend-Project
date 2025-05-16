@@ -8,6 +8,9 @@ exports.placeBet = async (req, res) => {
 
   try {
     const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
     if (user.walletBalance < stake) {
       return res.status(400).json({ msg: "Insufficient funds" });
     }
@@ -17,7 +20,7 @@ exports.placeBet = async (req, res) => {
       return res.status(400).json({ msg: "Invalid or completed game" });
     }
 
-    // Deduct stake
+    // Deduct stake from user wallet
     user.walletBalance -= stake;
     await user.save();
 
@@ -26,11 +29,14 @@ exports.placeBet = async (req, res) => {
       game: gameId,
       outcome,
       stake,
+      status: "pending",
+      payout: 0,
     });
 
     await bet.save();
     res.status(201).json(bet);
   } catch (err) {
+    console.error("Error placing bet:", err);
     res.status(500).json({ msg: "Server error" });
   }
 };
@@ -40,6 +46,7 @@ exports.getUserBets = async (req, res) => {
     const bets = await Bet.find({ user: req.user.id }).populate("game");
     res.json(bets);
   } catch (err) {
+    console.error("Error getting user bets:", err);
     res.status(500).json({ msg: "Server error" });
   }
 };
@@ -55,8 +62,8 @@ exports.resolveBets = async (game) => {
 
     if (bet.outcome === game.result) {
       if (game.result === "A") payout = bet.stake * game.oddsA;
-      if (game.result === "B") payout = bet.stake * game.oddsB;
-      if (game.result === "Draw") payout = bet.stake * game.drawOdds;
+      else if (game.result === "B") payout = bet.stake * game.oddsB;
+      else if (game.result === "Draw") payout = bet.stake * game.drawOdds;
 
       won = true;
     }

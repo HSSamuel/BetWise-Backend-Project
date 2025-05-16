@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { getWallet, topUpWallet } = require("../controllers/walletController");
-const { auth } = require("../middlewares/authMiddleware");
 
-router.get("/", auth, getWallet);
-router.post("/topup", auth, topUpWallet);
+const { auth } = require("../middleware/authMiddleware"); // Adjust path if needed
+const walletController = require("../controllers/walletController");
+
+router.get("/", auth, walletController.getWallet); // GET /wallet
+router.post("/topup", auth, walletController.topUpWallet); // POST /wallet/topup
 
 module.exports = router;
-// This route is for getting and topping up the user's wallet.
+// This code sets up a router for wallet-related routes in an Express application. It imports the necessary modules and middleware, defines two routes for getting wallet information and topping up the wallet, and exports the router for use in the main application. The routes are protected by authentication middleware to ensure that only authenticated users can access them.
